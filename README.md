@@ -1,0 +1,1 @@
+# Diamond__Kata
