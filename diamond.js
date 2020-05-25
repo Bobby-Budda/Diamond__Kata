@@ -1,37 +1,36 @@
+//Anlegen des Diamanten
 function Diamond (value) {
     this.value = value;
 };
 
-Diamond.prototype.toString = function (){
-    return this.value;
-};
 
+//_line Unterteilung des Diamanten in mehrere Zeilen
+Diamond.prototype._line = function (current, widest){
+    var _outerSpace = this._outerSpace(current, widest);
+    var _innerSpace = this._innerSpace(current);
 
-Diamond.prototype.line = function (current, widest){
-    var outerSpace = this.outerSpace(current, widest);
-    var innerSpace = this.innerSpace(current);
+   var _line = _outerSpace + current;
 
-   var line = outerSpace + current;
-
-   if (innerSpace) {
-       line += innerSpace + current;
+   if (_innerSpace) {
+       _line += _innerSpace + current;
    }
-   return line;
+   return _line;
 };
 
-Diamond.prototype.innerSpace = function (value) {
+//innere Leerzeichen bestimmen
+Diamond.prototype._innerSpace = function (value) {
     
-    var index = this.getIndexOf(value);
+    var index = this._getIndexOf(value);
 
     var spaces = 2 * (index - 1) - 1;
 
     return new Array(spaces + 1).join(' ');
 };
-
-Diamond.prototype.outerSpace = function (current, widest){
+//vor dem Buchstaben liegende Leerzeichen bestimmen
+Diamond.prototype._outerSpace = function (current, widest){
     
-    var currentValue = this.getIndexOf(current);
-    var widestValue = this.getIndexOf(widest);
+    var currentValue = this._getIndexOf(current);
+    var widestValue = this._getIndexOf(widest);
 
     if (currentValue > widestValue){
         throw new Error('Ungültige Kombination');
@@ -42,30 +41,58 @@ Diamond.prototype.outerSpace = function (current, widest){
     return new Array(spaces + 1).join(' ');
 };
 
-Diamond.prototype.getIndexOf = function (char) {
+//Implementierung des Unicode Zeichensatzen .chatCodeAt, bei dem jeder Buchstabe
+//einer Zahl gleichbedeutend ist
+
+//Der Ausdruck /^[A-Z]$/ bedeutet, dass die Zeichenkette nur aus Großbuchstaben 
+//bestehen darf.
+Diamond.prototype._getIndexOf = function (char) {
     if (false === /^[A-Z]$/.test(char)) {
+        console.log("******", char);
         throw new Error('Ungültige Aussage');
     }
-    var codeOfA = 'A'.charCodeAt(0);
+   var codeOfA = 'A'.charCodeAt(0);
     return char.charCodeAt(0) - codeOfA + 1;
 };
 
-Diamond.prototype.upperHalf = function (char) {
-    var index = this.getIndexOf(char);
+//Definierung der oberen Hälfte, von der ersten Zeile ('A')
+//bis zur breitesten Stelle 
+Diamond.prototype._upperHalf = function (char) {
+    var index = this._getIndexOf(char);
     var result = [];
 
-    var codeOfA = 'A'.charCodeAt(0);
+   var codeOfA = 'A'.charCodeAt(0);
 
     for (var i = 0; i < index; i++) {
-        result.push(this.line(String.fromCharCode(i + codeOfA), char));
+        result.push(this._line(String.fromCharCode(i + codeOfA), char));
     }
     return result.join('\n');
 };
 
-Diamond.prototype.lowerHalf = function (){
-    return ' B B\n A';
+//Definierung der unteren Hälfte des Diamanten, , also = obere Hälfte
+//ohne breiteste Stelle und umgekehrter Reihenfolge
+
+Diamond.prototype._lowerHalf = function (char){
+    var index = this._getIndexOf(char);
+    var result = [];
+
+   var codeOfA = 'A'.charCodeAt(0);
+
+    for (var i = index -2; i >= 0; i--) {
+        result.push(this._line(String.fromCharCode(i + codeOfA), char));
+    }
+    return result.join('\n');
 };
 
+
+//.toString = eine Zahlenfolge, die das aktuelle Objekt darstellt
+//Integrierung aller Komponenten, also kompletter Diamant
+Diamond.prototype.toString = function (){
+    if (this.value === 'A') {
+        return this.value;
+    }
+    return this._upperHalf(this.value) + '\n' + this._lowerHalf(this.value);
+};
 
 
 
